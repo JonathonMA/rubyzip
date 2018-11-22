@@ -137,6 +137,17 @@ module AssertEntry
     assert_nil(zis.get_next_entry)
   end
 
+  def assert_zipfile_contents(zos, testZipFile)
+    assert(!zos.nil?)
+    assert_equal zos.entries.map(&:name), testZipFile.entry_names
+  end
+
+  def assert_test_zip_contents_file(testZipFile)
+    ::Zip::File.open(testZipFile.zip_name) do |zis|
+      assert_zipfile_contents(zis, testZipFile)
+    end
+  end
+
   def assert_test_zip_contents(testZipFile)
     ::Zip::InputStream.open(testZipFile.zip_name) do |zis|
       assert_stream_contents(zis, testZipFile)
