@@ -121,6 +121,19 @@ class ZipOutputStreamTest < MiniTest::Test
     assert_test_zip_contents_file(TEST_ZIP)
   end
 
+  def test_writing_a_trailing_zip_file
+    io = File.open(TEST_ZIP.zip_name, "wb")
+    str = "Looks like a text file, is also a zip!\n"
+    io << str
+    ::Zip::OutputStream.write_buffer(io) do |zos|
+      zos.comment = TEST_ZIP.comment
+      write_test_zip(zos)
+    end
+    io.close
+    assert_equal IO.read(TEST_ZIP.zip_name)[0..str.length-1], str
+    assert_test_zip_contents_file(TEST_ZIP)
+  end
+
   def assert_i_o_error_in_closed_stream
     assert_raises(IOError) do
       zos = ::Zip::OutputStream.new('test/data/generated/test_putOnClosedStream.zip')
